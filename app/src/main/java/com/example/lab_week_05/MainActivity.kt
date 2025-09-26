@@ -47,20 +47,24 @@ class MainActivity : AppCompatActivity() {
             override fun onFailure(call: Call<List<ImageData>>, t: Throwable) {
                 Log.e(MAIN_ACTIVITY, "Failed to get response", t)
             }
-            override fun onResponse(call: Call<List<ImageData>>, response:
-            Response<List<ImageData>>) {
-                if(response.isSuccessful){
+            override fun onResponse(call: Call<List<ImageData>>, response: Response<List<ImageData>>) {
+                if (response.isSuccessful) {
                     val image = response.body()
-                    val firstImage = image?.firstOrNull()?.imageUrl.orEmpty()
+                    val firstData = image?.firstOrNull()
+
+                    val firstImage = firstData?.imageUrl.orEmpty()
                     if (firstImage.isNotBlank()) {
                         imageLoader.loadImage(firstImage, imageResultView)
                     } else {
                         Log.d(MAIN_ACTIVITY, "Missing image URL")
                     }
-                    apiResponseView.text = getString(R.string.image_placeholder,
-                        firstImage)
-                }
-                else{
+
+                    // Ambil nama breed (kalau ada)
+                    val breedName = firstData?.breeds?.firstOrNull()?.name ?: "Unknown"
+
+                    // Tampilkan breed, bukan URL
+                    apiResponseView.text = getString(R.string.image_placeholder, breedName)
+                } else {
                     Log.e(MAIN_ACTIVITY, "Failed to get response\n" +
                             response.errorBody()?.string().orEmpty()
                     )
